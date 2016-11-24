@@ -10,5 +10,6 @@ set(${CMAKE_PROJECT_NAME}_BOARD mATtiny45)
 set(${CMAKE_PROJECT_NAME}_PROGRAMMER arduinoasisp)
 set(${CMAKE_PROJECT_NAME}_PORT /dev/cu.usbmodem1421)
 
-set(${CMAKE_PROJECT_NAME}_SKETCH tinyClock.ino)
+set(${CMAKE_PROJECT_NAME}_SRCS tinyClock.cpp TimeDisplay.cpp)
+set(${CMAKE_PROJECT_NAME}_HDRS TimeDisplay.h)
 generate_arduino_firmware(${CMAKE_PROJECT_NAME} AFLAGS -v)
