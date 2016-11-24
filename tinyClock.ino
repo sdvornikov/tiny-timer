@@ -1,20 +1,15 @@
 #include <Arduino.h>
 
+// pins
 uint8_t serialData = 0;
 uint8_t latch = 1;
 uint8_t clk = 2;
-//int outEnable = 12;
-
-int numbers[4][7] = {{HIGH, HIGH, LOW,  LOW,  LOW,  LOW,  LOW}, // 1
-                     {HIGH, LOW,  HIGH, HIGH, LOW,  HIGH, HIGH},// 2
-                     {HIGH, HIGH, HIGH, HIGH, LOW,  HIGH, LOW}, // 3
-                     {HIGH, HIGH, LOW,  HIGH, HIGH, LOW,  LOW}};// 4
 
 
-//{{LOW,  HIGH, HIGH, LOW,  LOW,  LOW,  LOW,  LOW}, // 1
-//                 {LOW,  HIGH, LOW,  HIGH, HIGH, LOW,  HIGH, HIGH},// 2
-//                 {HIGH, HIGH, HIGH, HIGH, HIGH, LOW,  HIGH, LOW}, // 3
-//                 {HIGH, HIGH, HIGH, LOW,  HIGH, HIGH, LOW,  LOW}};// 4
+int digits[4][7] = {{HIGH, HIGH, LOW,  LOW,  LOW,  LOW,  LOW}, // 1
+                    {HIGH, LOW,  HIGH, HIGH, LOW,  HIGH, HIGH},// 2
+                    {HIGH, HIGH, HIGH, HIGH, LOW,  HIGH, LOW}, // 3
+                    {HIGH, HIGH, LOW,  HIGH, HIGH, LOW,  LOW}};// 4
 
 
 volatile boolean colon = false;
@@ -39,7 +34,7 @@ ISR(TIMER1_COMPA_vect) // Interrupt Service Routine
     pushRegister(colon);
 
     for (int i = 0; i < 7; i++) {
-        pushRegister((uint8_t) numbers[display[isr_digit]][i]);
+        pushRegister((uint8_t) digits[display[isr_digit]][i]);
     }
     latchRegisters();
 }
@@ -50,23 +45,23 @@ void pushRegister(int value) {
     digitalWrite(clk, LOW);
 }
 
+void latchRegisters() {
+    digitalWrite(latch, HIGH);
+    digitalWrite(latch, LOW);
+}
+
 void setup() {
-
-
     initTimer1();
-
-
     pinMode(serialData, OUTPUT);
     pinMode(latch, OUTPUT);
     pinMode(clk, OUTPUT);
-    //pinMode(outEnable, OUTPUT);
 }
 
 void initTimer1() {
     cli(); // Disable global interrupts
 
-    TCCR1 |= ((1 << CS12) | (1 << CS10)); // Timer 1 prescaling - divides by 16 */
-    TCCR1 &= ~(1 << CS11); // Timer 1 prescaling - divides by 16 */
+    TCCR1 |= ((1 << CS12) | (1 << CS10)); // Timer 1 prescaling - divides by 16
+    TCCR1 &= ~(1 << CS11); // Timer 1 prescaling - divides by 16
     TCCR1 |= (1 << CTC1); // Put timer 1 in CTC mode
     // OCR0A = 100; // Count 100 cycles for interrupt
     OCR1A = 200; // Count 50 cycles for interrupt
@@ -84,11 +79,4 @@ void loop() {
     colon = !colon;
 
 
-}
-
-void latchRegisters() {
-    //digitalWrite(outEnable, HIGH);
-    digitalWrite(latch, HIGH);
-    digitalWrite(latch, LOW);
-    //digitalWrite(outEnable, LOW);
 }
